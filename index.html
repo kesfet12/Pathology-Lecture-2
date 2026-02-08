@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>محاضرات الرنين - أمراض المفاصل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #202124;
+            --accent-color: #0056b3;
+            --trans-bg: #f8f9fa;
+            --trans-border: #0056b3;
+            --nav-bg: #f8f9fa;
+            --highlight: #e8f0fe;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Roboto', 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 90px;
+            min-height: 100vh;
+            overscroll-behavior-y: none;
+        }
+
+        .content-container {
+            padding: 20px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            direction: ltr;
+        }
+
+        .text-block {
+            margin-bottom: 25px;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 15px;
+        }
+
+        .title-text {
+            font-weight: bold;
+            font-size: 1.6rem;
+            color: #000;
+            margin-bottom: 15px;
+            display: block;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            direction: ltr;
+        }
+
+        .sub-title {
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: block;
+            direction: ltr;
+        }
+
+        .english-paragraph {
+            line-height: 2.0;
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .interactive-word {
+            cursor: pointer;
+            border-bottom: 1px dotted #999;
+            transition: background 0.2s;
+        }
+        .interactive-word:hover {
+            background-color: #e3f2fd;
+            color: var(--accent-color);
+        }
+        .interactive-word:active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .toggle-trans-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 0;
+            direction: rtl;
+            width: 100%;
+        }
+        
+        .toggle-trans-btn:hover {
+            opacity: 0.8;
+        }
+
+        .inline-translation {
+            display: none;
+            background-color: var(--trans-bg);
+            color: #000;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 5px;
+            border-right: 4px solid var(--trans-border);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            direction: rtl;
+            text-align: justify;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .lecture-image-container {
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .lecture-image {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: var(--nav-bg);
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+            z-index: 1000;
+            direction: rtl;
+        }
+
+        .nav-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .nav-btn:disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            box-shadow: none;
+        }
+        .page-counter {
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            color: #555;
+            background: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .sheet-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+            display: flex; align-items: flex-end;
+        }
+        .sheet-overlay.active { opacity: 1; visibility: visible; }
+        .sheet-content {
+            background: white; width: 100%; padding: 25px;
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
+            transform: translateY(100%); transition: transform 0.3s;
+            text-align: center;
+        }
+        .sheet-overlay.active .sheet-content { transform: translateY(0); }
+        
+        .selected-word-box {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+            padding: 15px; border-radius: 12px;
+            margin-top: 10px;
+        }
+        .sw-container {
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px;
+        }
+        .audio-btn {
+            background: none; border: none; cursor: pointer; font-size: 1.5rem; color: var(--accent-color);
+        }
+        .sw-english {
+            font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 1.4rem; color: var(--accent-color);
+        }
+        .sw-arabic {
+            font-family: 'Cairo', sans-serif; font-size: 1.3rem; color: #333; font-weight: bold; display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-container" id="contentArea"></div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn" id="nextBtn" onclick="changePage(1)">التالي &#8592;</button>
+        <div class="page-counter" id="pageIndicator">1 / 7</div>
+        <button class="nav-btn" id="prevBtn" onclick="changePage(-1)">&#8594; السابق</button>
+    </div>
+
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet(event)">
+        <div class="sheet-content">
+            <div style="font-family:'Cairo'; color:#666; margin-bottom:10px;">معنى الكلمة:</div>
+            <div id="selectedWordBox" class="selected-word-box">
+                <div class="sw-container">
+                    <span id="swEnglish" class="sw-english"></span>
+                    <button id="audioBtn" class="audio-btn" onclick="playAudio()">🔊</button>
+                </div>
+                <span id="swArabic" class="sw-arabic"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- القاموس الطبي والعام الشامل ---
+        const dictionary = {
+            // كلمات عامة وروابط
+            "the": "الـ", "of": "من/لـ", "in": "في", "and": "و", "is": "هو/يكون", "associated": "مرتبط", "clinical": "سريري",
+            "are": "هم/يكونون", "to": "إلى/لـ", "a": "أداة تنكير", "an": "أداة تنكير", "medications": "أدوية", "common": "شائع",
+            "with": "مع", "without": "بدون", "or": "أو", "by": "بواسطة", "that": "الذي/ذلك", "conditions": "حالات", "caused": "تسبب",
+            "which": "الذي/التي", "this": "هذا", "these": "هؤلاء/هذه", "it": "هو/هي", "small": "صغير", "occurs": "يحدث",
+            "can": "يمكن", "be": "يكون", "from": "من", "for": "لأجل", "on": "على", "minority": "أقلية", "commonly": "شيوعا ",
+            "so": "لذلك", "such": "مثل", "as": "كـ/مثل", "at": "عند/في", "but": "لكن", "defects": "عيوب", "cartilage": "غضروف",
+            "very": "جداً", "more": "أكثر", "less": "أقل", "most": "معظم/الأكثر", "triggered": "محفز", "appear": "يظهر",
+            "what": "ماذا/ما", "you": "أنت", "do": "تفعل", "because": "لأن", "some": "بعض", "precipitation": "ترسب", "phenomena": "ظواهر",
+            "when": "عندما", "where": "أين/حيث", "all": "الكل", "any": "أي", "not": "لا/ليس", "stimulating": "محفز", "fracture": "كسر",
+            "often": "غالباً", "although": "رغم أن", "hence": "وبالتالي", "even": "حتى", "mediators": "وسائط", "mentioned": "ذكر ",
+            "about": "تقريباً/حول", "its": "الخاص به", "their": "الخاص بهم", "has": "لديه/يملك", "recruit": "يجند", "also": "أيضاً",
+            "have": "لدينا/يملكون", "does": "يفعل", "let's": "دعنا", "say": "يقول/لنقل", "leukocytes": "كريات دم بيضاء", "affected": "تتاثر",
+            "between": "بين", "now": "الآن", "just": "فقط", "later": "لاحقاً", "only": "فقط", "resident": "مقيم", "bearing": "تحمل",
+            "if": "إذا/لو", "we": "نحن", "us": "نحن (ضمير)", "let": "دع", "into": "إلى داخل", "macrophages": "بلاعم",
+            "how": "كيف", "no": "لا", "other": "آخر", "will": "سوف", "do": "يفعل", "phagocytose": "يبلعم", "cartilaginous": "غضروفي",
+            "after": "بعد", "before": "قبل", "in": "في", "contribute": "يساهم", "include": "يشمل", "causes": "يسبب",
+            "age": "عمر", "individual": "فرد", "duration": "مدة", "years": "سنوات", "resulting": "الناتجه",
+            "genetic": "وراثي", "predisposition": "استعداد", "alcohol": "كحول", "consumption": "استهلاك", "pieces": "قطع",
+            "obesity": "سمنة", "drugs": "أدوية", "eg": "مثلاً", "thiazides": "ثيازيدات", "bone": "عظم",
+            "reduce": "يقلل", "acute": "حاد", "gouty": "نقرسي", "intense": "كثيف/شديد", "appears": "يظهر",
+            "inflammatory": "التهابي", "infiltrate": "ارتشاح", "rich": "غني", "neutrophils": "عدلات", "increased": "زياده",
+            "permeates": "يتغلغل", "fluid": "سائل", "frequently": "بشكل متكرر", "found": "موجود", "causing": "يسبب ",
+            "cytoplasm": "سايتوبلازم", "aspirated": "مسحوب", "arranged": "مرتب", "clusters": "عناقيد", "osteophytes": "نتوءات عظمية",
+            "tophi": "توف (رواسب)", "ligaments": "أربطة", "tendons": "أوتار", "bursae": "أكياس زليلية", "loosened": "تَفَكُّكُ ",
+            "pathognomonic": "مميِز للمرض", "formed": "متكون", "large": "كبير", "aggregates": "تجمعات", "cases": "حالات",
+            "surrounded": "محاط", "foreign": "غريب", "giant": "عملاق", "cell": "خلية", "reaction": "تفاعل", "pain": "ألم",
+            "nephropathy": "اعتلال كلوي", "refers": "يشير", "renal": "كلوي", "complications": "مضاعفات", "symptomatic": "اعراض",
+            "nephrolithias": "حصى كلى", "kidney": "كلية", "stones": "حصى", "pyelonephritis": "التهاب الحويضة والكلية",
+            "interstitium": "نسيج خلالي", "tubules": "نبيبات", "stages": "مراحل", "recognized": "معروف/مميز",
+            "puberty": "بلوغ", "men": "رجال", "menopause": "سن اليأس", "women": "نساء", "within": "داخل",
+            "presents": "يظهر/يقدم", "sudden": "مفاجئ", "onset": "بداية", "excruciating": "مبرح/شديد", "around": "حول",
+            "localized": "موضعي", "hyperemia": "احتقان", "warmth": "دفو", "first": "أول", "characterized": "يتميز",
+            "attacks": "نوبات", "monoarticular": "أحادي المفصل", "50%": "50%", "occur": "يحدث", "high": "عالي",
+            "metatarsophalangeal": "مشطي سلامي", "big": "كبير", "toe": "إصبع قدم", "intercritical": "بين النوبات", "body": "جسم",
+            "period": "فترة", "symptom-free": "خالي من الأعراض", "interval": "فاصل", "following": "يتبع",
+            "resolution": "زوال/حل", "tophaceous": "توفي", "average": "معدل", "10": "10", "necessary": "ضروري",
+            "initial": "أولي", "attack": "نوبة", "treatment": "علاج", "modification": "تعديل", "both": "كلاهما",
+            "lifestyle": "نمط حياة", "weight": "وزن", "loss": "فقدان", "dietary": "غذائي", "cause": "تسبب",
+            "changes": "تغييرات", "purine": "بيورين", "intake": "أخذ/تناول", "medication": "دواء", "enzymatic": "إنزيمي",
+            "nsaids": "مضادات التهاب غير ستيرويدية", "colchicine": "كولشيسين", "lower": "خفض", "serum": "مصل",
+            "levels": "مستويات", "xanthine": "زانثين", "oxidase": "أوكسيداز", "inhibitors": "مثبطات", "production": "إنتاج",
+            "uricosuric": "طارد لليورات", "increase": "يزيد", "excretion": "إخراج", "used": "مستخدم",
+            "generally": "عموماً", "shorten": "يقصر", "life": "حياة", "span": "مدى", "synovial": "زليلي",
+            "significantly": "بشكل ملحوظ", "affect": "يؤثر", "quality": "جودة", "calcium": "كالسيوم",
+            "pyrophosphate": "بيروفوسفات", "crystal": "كريستال", "deposition": "ترسب", "disease": "مرض",
+            "pseudogout": "نقرس كاذب", "cppd": "CPPD", "known": "معروف", "older": "أكبر", "medullary": "لبي",
+            "50": "50", "becomes": "يصبح", "increasing": "زيادة", "divided": "مقسم", "four": "أربعة",
+            "sporadic": "فرادي", "idiopathic": "مجهول السبب", "hereditary": "وراثي", "secondary": "ثانوي",
+            "types": "أنواع", "autosomal": "جسدي", "dominant": "سائد", "variant": "نوع/متغير", "asymptomatic": "بدون أعراض",
+            "germline": "خط جرثومي", "mutations": "طفرات", "transport": "نقل", "channel": "قناة", "develops": "يطوّر",
+            "results": "النتائج", "early": "مبكراً", "various": "متنوع", "including": "بما في ذلك", "aims": "يهدف ",
+            "previous": "سابق", "damage": "تلف/ضرر", "hyperparathyroidism": "فرط نشاط جارات الدرقية", "hemochromatosis": "داء ترسب الأصبغة الدموية",
+            "hypothyroidism": "قصور الدرقية", "diabetes": "سكري", "predispose": "يهيئ", "menisci": "غضاريف هلالية",
+            "intervertebral": "بين الفقرات", "discs": "أقراص", "deposits": "رواسب", "enlarge": "يكبر", "reduction": "تخفيض",
+            "rupture": "ينفجر", "seed": "يبذر/ينشر", "confused": "يخلط", "clinically": "سريرياً", "usually": "عادةً",
+            "oa": "التهاب المفاصل العظمي", "ra": "روماتويد", "involvement": "إصابة", "last": "يستمر", "individuals": "أفراد",
+            "several": "عدة", "days": "أيام", "weeks": "أسابيع", "polyarticular": "متعدد المفاصل", "relatively": "نسبيا",
+            "ultimately": "في النهاية", "approximately": "تقريباً", "experience": "يجرب/يعاني", "significant": "مهم/كبير",
+            "supportive": "داعم", "prevents": "يمنع", "slows": "يبطئ", "infectious": "معدي", "disorders": "الاضطرابات",
+            "infected": "مصاب بعدوى", "hematogenous": "دموي المنشأ", "dissemination": "انتشار", "direct": "مباشر",
+            "inoculation": "تلقيح/إدخال", "through": "عبر", "skin": "جلد", "contiguous": "مجاور/ملاصق",
+            "spread": "انتشار", "soft": "رخو", "abscess": "خراج", "osteomyelitis": "التهاب العظم والنقي",
+            "potentially": "من المحتمل", "serious": "خطير", "rapid": "سريع", "permanent": "دائم", "produce": "ينتج",
+            "destruction": "تدمير", "suppurative": "قيحي", "bacteria": "بكتيريا", "enter": "يدخل", "subacute": "تحت الحادّ",
+            "etiologic": "مسبب للمرض", "agent": "عامل", "depends": "يعتمد", "anatomic": "تشريحي", "tissue": "نسيج",
+            "location": "موقع", "setting": "وضع/إطار", "trauma": "رضح/صدمة", "intravenous": "وريدي", "adults": "البالغون",
+            "drug": "مخدر/دواء", "use": "استخدام", "staphylococcus": "مكورات عنقودية", "aureus": "ذهبية", "group": "مجموعة",
+            "pathogen": "ممرض", "children": "أطفال", "neonates": "حديثي الولادة", "streptococcus": "عقديات", "painful": "مؤلم",
+            "responsible": "مسؤول", "infection": "عدوى", "gram-negative": "سلبية الغرام", "bacilli": "عصيات", "acutely": "شكل حاد",
+            "pseudomonas": "زائفة", "seen": "مراى", "immunocompromised": "منقوص المناعة", "people": "ناس", "warm": "دافئ",
+            "classic": "كلاسيكي", "presentation": "تقديم/عرض", "swollen": "متورم", "restricted": "مقدم", "therapy": "علاج",
+            "range": "مدى", "motion": "حركة", "fever": "حمى", "leukocytosis": "كثرة الكريات البيض", "prevent": "يمنع",
+            "elevated": "مرتفع", "c-reactive": "C-تفاعلي", "protein": "بروتين", "single": "مفرد",
+            "shoulder": "كتف", "elbow": "مرفق", "axial": "محوري", "inject": "يحقن",
+            "aspiration": "سحب", "diagnostic": "تشخيصي", "yields": "ينتج", "purulent": "قيحي",
+            "causative": "مسبب", "identified": "محدد/معرف", "prompt": "فوري", "recognition": "تعرف/إدراك",
+            "effective": "فعال", "antimicrobial": "مضاد ميكروبات",
+            
+            // مصطلحات Arthritis & OA
+            "joint": "مفصل", "joints": "مفاصل", "diseases": "أمراض", "arthritis": "التهاب مفاصل",
+            "inflammation": "التهاب", "forms": "أشكال", "osteoarthritis": "التهاب المفاصل العظمي ",
+            "rheumatoid": "روماتويدي", "differ": "يختلف", "pathogenesis": "نشوء المرض", "manifestations": "مظاهر",
+            "pathologic": "مرضي", "immune": "مناعي", "reactions": "تفاعلات", "infections": "التهابات/عدوى",
+            "crystals": "كريستالات", "degenerative": "تنكسي", "primary": "أولي", "elderly": "كبار السن",
+            "process": "عملية", "begins": "يبدأ", "end": "نهاية", "4th": "رابع", "decade": "عقد",
+            "progressively": "تدريجياً", "steadily": "بثبات", "increases": "يزيد", "producing": "ينتج",
+            "symptoms": "أعراض", "probably": "محتمل", "wear": "استهلاك", "tear": "تآكل/تمزق",
+            "repeated": "متكرر", "minor": "طفيف", "heredity": "وراثة", "ageing": "شيخوخة",
+            "focal": "بؤري", "articular": "مفصلي", "factors": "عوامل", "favouring": "تفضل",
+            "susceptibility": "قابلة/استعداد", "develop": "يطور", "observed": "ملاحظ", "injury": "إصابة",
+            "loose": "سايب/رخو", "bodies": "أجسام", "congenital": "ولادي", "dislocation": "خلع",
+            "hip": "ورك", "morphologic": "شكلي", "features": "ميزات", "above": "أعلاه",
+            "weight-bearing": "حامل للوزن", "hips": "أوراك", "knee": "ركبة", "vertebrae": "فقرات",
+            "interphalangeal": "بين السلاميات", "fingers": "أصابع", "cartilages": "غضاريف", "regressive": "تراجعي",
+            "marked": "واضح/ملحوظ", "regions": "مناطق", "initially": "بدائياً", "loss": "فقدان",
+            "matrix": "مصفوفة", "progression": "تقدم", "loosening": "تخلخل", "flaking": "تقشر",
+            "fissuring": "تشقق", "breaking": "كسر", "off": "فصل", "exposing": "كشف",
+            "subchondral": "تحت الغضروف", "denuded": "مكشوف/معرى", "polished": "مصقول", "ivory": "عاج",
+            "death": "موت", "superficial": "سطحي", "osteocytes": "خلايا عظمية", "osteoclastic": "ناقضة للعظم",
+            "activity": "نشاط", "rarefaction": "تخلخل", "microcyst": "كيس دقيق", "formation": "تكوين",
+            "occasionally": "أحياناً", "microfractures": "كسور دقيقة", "subjacent": "مجاور/تحتي", "margins": "حواف",
+            "respond": "يستجيب", "osteophyte": "نتوء عظمي", "spur": "مهز", "fragmented": "مفتت",
+            "free": "حر", "synovium": "غشاء زليلي", "advanced": "متقدم", "low-grade": "درجة ناصية",
+            "chronic": "مزمن", "synovitis": "التهاب زليلي", "villous": "زغبي", "hypertrophy": "تضخم",
+            "conspicuous": "واضح", "back": "ظهر", "stiffness": "تيبس", "diminished": "قلة",
+            "mobility": "حركة", "discomfort": "انزعاج", "difference": "فرق", "gout": "نقرس",
+            "transient": "عابر", "initiated": "مبتدئ", "urate": "يورات", "deposited": "مترسب",
+            "underlying": "كامن", "abnormally": "بشكل غير طبيعي", "uric": "يوريك", "acid": "حامض",
+            "tissues": "أنسجة", "fluids": "سوائل", "hyperuricemia": "فرط حمض يوريك الدم", "plasma": "بلازما",
+            "level": "مستوى", "6.8": "6.8", "mg/dl": "ملغ/ديسيلتر", "sufficient": "كافي", "development": "تطور",
+            "elevated": "مرتفع", "result": "نتيجة", "overproduction": "فرط إنتاج", "reduced": "قلة",
+            "basis": "أساس", "unknown": "غير معروف", "patients": "مرضى"
+        };
+
+        const pages = [
+            // Slide 1: Joint diseases Intro
+            {
+                content: [
+                    {
+                        text: "Joint diseases",
+                        trans: "أمراض المفاصل",
+                        isTitle: true
+                    },
+                    {
+                        text: "ARTHRITIS: Arthritis is inflammation of joints. The most common forms of arthritis are osteoarthritis and rheumatoid arthritis, which differ in their pathogenesis and clinical and pathologic manifestations.",
+                        trans: "التهاب المفاصل: التهاب المفاصل هو التهاب المفاصل. أكثر أنواع التهاب المفاصل شيوعاً هي التهاب المفاصل العظمي والتهاب المفاصل الروماتويدي، اللي يختلفون بنشوء المرض ومظاهرهم السريرية والمرضية."
+                    },
+                    {
+                        text: "Other types of arthritis are caused by immune reactions, infections, and crystal deposition.",
+                        trans: "أنواع أخرى من التهاب المفاصل مسببة بواسطة تفاعلات مناعية، التهابات، وترسب الكريستالات."
+                    },
+                    {
+                        text: "Degenerative Arthritis: Osteoarthritis",
+                        trans: "التهاب المفاصل التنكسي: التهاب المفاصل العظمي",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "TYPES AND PATHOGENESIS OA occurs in 2 clinical forms:",
+                        trans: "الأنواع ونشوء المرض: التهاب المفاصل العظمي تصير بـ 2 أشكال سريرية:"
+                    },
+                    {
+                        text: "Primary OA occurs in the elderly, more commonly in women than in men. The process begins by the end of 4th decade and then progressively and steadily increases producing clinical symptoms.",
+                        trans: "التهاب المفاصل العظمي الأولية تصير عند كبار السن، أكثر شيوعاً بالنساء من الرجال. العملية تبدي بنهاية العقد الرابع وبعدين تزيد تدريجياً وبثبات تنتج أعراض سريرية."
+                    },
+                    {
+                        text: "Probably, wear and tear with repeated minor trauma, heredity, obesity and ageing, all contribute to focal degenerative changes in the articular cartilage of the joints. Genetic factors favouring susceptibility to develop OA have been observed.",
+                        trans: "محتمل، الاستهلاك والتآكل ويا الرضوض الطفيفة المتكررة، الوراثة، السمنة والشيخوخة، كلها تساهم بتغيرات تنكسية بؤرية بالغضروف المفصلي للمفاصل. عوامل وراثية تفضل القابلية لتطوير التهاب المفاصل العظمي تمت ملاحظتها."
+                    },
+                    {
+                        text: "Secondary OA may appear at any age and is the result of any previous wear and tear phenomena involving the joint such as previous injury, fracture, inflammation, loose bodies and congenital dislocation of the hip.",
+                        trans: "التهاب المفاصل العظمي الثانوية ممكن تظهر بأي عمر وهي نتيجة أي ظواهر استهلاك وتآكل سابقة تشمل المفصل مثل إصابة سابقة، كسر، التهاب، أجسام سايبة وخلع ولادي للورك."
+                    },
+                    {
+                        text: "MORPHOLOGIC FEATURES As mentioned above, the weight-bearing joints such as hips, knee and vertebrae are most commonly involved but interphalangeal joints of fingers may also be affected.",
+                        trans: "الميزات الشكلية: مثل ما ذكرنا فوك، المفاصل اللي تحمل وزن مثل الورك، الركبة والفقرات هي أكثر شي تنصاب بس المفاصل بين السلاميات للأصابع ممكن همين تتأثر."
+                    }
+                ]
+            },
+            // Slide 2: Morphologic Features (cont.)
+            {
+                content: [
+                    {
+                        text: "1. Articular cartilages, The regressive changes are most marked in the weight bearing regions of articular cartilages. Initially, there is loss of cartilaginous matrix.",
+                        trans: "1. الغضاريف المفصلية، التغيرات التراجعية تكون أكثر وضوحاً بمناطق حمل الوزن للغضاريف المفصلية. بالبداية، اكو فقدان للمصفوفة الغضروفية."
+                    },
+                    {
+                        text: "Further progression of the process causes loosening, flaking and fissuring of the articular cartilage resulting in breaking off of pieces of cartilage exposing subchondral bone.",
+                        trans: "تقدم أكثر للعملية يسبب تخلخل، تقشر وتشققات بالغضروف المفصلي ينتج عنه تكسر قطع من الغضروف تكشف العظم تحت الغضروفي."
+                    },
+                    {
+                        text: "2. Bone, The denuded subchondral bone appears like polished ivory. There is death of superficial osteocytes and increased osteoclastic activity causing rarefaction, microcyst formation and occasionally microfractures of the subjacent bone.",
+                        trans: "2. العظم، العظم تحت الغضروفي المكشوف يظهر مثل العاج المصقول. اكو موت للخلايا العظمية السطحية وزيادة نشاط ناقضات العظم تسبب تخلخل، تكوين أكياس دقيقة وأحياناً كسور دقيقة بالعظم المجاور."
+                    },
+                    {
+                        text: "The margins of the joints respond to cartilage damage by osteophyte or spur formation. Loosened and fragmented osteophytes may form free loose bodies.",
+                        trans: "حواف المفاصل تستجيب لتلف الغضروف بواسطة نتوء عظمي أو تكوين مهز. النتوءات العظمية المتخلخلة والمفتتة ممكن تكون أجسام سايبة حرة."
+                    },
+                    {
+                        text: "3. Synovium, Initially, there are no pathologic changes in the synovium but in advanced cases there is low-grade chronic synovitis and villous hypertrophy.",
+                        trans: "3. الغشاء الزليلي، بالبداية، ماكو تغيرات مرضية بالغشاء الزليلي بس بالحالات المتقدمة اكو التهاب زليلي مزمن درجة ناصية وتضخم زغبي."
+                    },
+                    {
+                        text: "The manifestations of OA are most conspicuous in large joints such as hips, knee and back. In symptomatic cases, clinical manifestations are joint stiffness, diminished mobility, discomfort and pain.",
+                        trans: "مظاهر التهاب المفاصل العظمي تكون أوضح شي بالمفاصل الكبيرة مثل الورك، الركبة والظهر. بالحالات المصحوبة بأعراض، المظاهر السريرية هي تيبس المفصل، حركة قليلة، انزعاج وألم."
+                    }
+                ]
+            },
+            // Slide 3: OA vs RA + Gout Intro
+            {
+                content: [
+                    {
+                        text: "The difference between O.A and R.A",
+                        trans: "الفرق بين التهاب المفاصل العظمي والتهاب المفاصل الروماتويدي",
+                        isSubTitle: true
+                    },
+                    {
+                         // (اهناي اكو صورة ) في السلايد الثالث
+                         type: 'image',
+                         src: 'figure_oa_ra_diff.jpg'
+                    },
+                    {
+                        text: "Gout",
+                        trans: "النقرس",
+                        isTitle: true
+                    },
+                    {
+                        text: "Gout is marked by transient attacks of acute arthritis initiated by urate crystals deposited within and around joints.",
+                        trans: "النقرس يتميز بنوبات عابرة من التهاب مفاصل حاد يبدأ بواسطة كريستالات اليورات المترسبة داخل وحول المفاصل."
+                    },
+                    {
+                        text: "Gout, whether primary (90% of cases) or secondary to underlying disease, is characterized by abnormally high levels of uric acid in tissues and body fluids.",
+                        trans: "النقرس، سواء أولي (90% من الحالات) أو ثانوي لمرض كامن، يتميز بمستويات عالية بشكل غير طبيعي من حامض اليوريك بالأنسجة وسوائل الجسم."
+                    }
+                ]
+            },
+            // Slide 4: Gout Pathogenesis & Morphology
+            {
+                content: [
+                    {
+                        text: "Pathogenesis. Hyperuricemia (plasma urate level above 6.8 mg/dL) is necessary, but not sufficient, for the development of gout.",
+                        trans: "نشوء المرض. فرط حمض يوريك الدم (مستوى يورات البلازما فوك 6.8 ملغ/ديسيلتر) ضروري، بس مو كافي، لتطور النقرس."
+                    },
+                    {
+                        text: "Elevated uric acid can result from overproduction, reduced excretion, or both. In primary gout, elevated uric acid most commonly results from reduced excretion, the basis of which is unknown in most patients.",
+                        trans: "ارتفاع حامض اليوريك ممكن ينتج من فرط الإنتاج، قلة الإخراج، أو الاثنين. بالنقرس الأولي، ارتفاع حامض اليوريك أكثر شيوعاً ينتج من قلة الإخراج، أساسه غير معروف بمعظم المرضى."
+                    },
+                    {
+                        text: "Secondary gout is associated with medications or conditions that cause hyperuricemia. In a small minority of cases primary gout is caused by uric acid overproduction as a result of enzymatic defects",
+                        trans: "النقرس الثانوي مرتبط بأدوية أو حالات تسبب فرط حمض يوريك الدم. بأقلية صغيرة من الحالات النقرس الأولي مسبب بواسطة فرط إنتاج حامض اليوريك كنتيجة لعيوب إنزيمية."
+                    },
+                    {
+                        text: "The arthritis in gout is triggered by precipitation of urate crystals in the joints, stimulating the production of mediators that recruit leukocytes.",
+                        trans: "التهاب المفاصل بالنقرس يتحفز بترسب كريستالات اليورات بالمفاصل، تحفز إنتاج وسائط تجند كريات الدم البيضاء."
+                    },
+                    {
+                        text: "Resident macrophages in the synovium phagocytose the crystals, Only about 10% of patients with hyperuricemia develop gout. Other factors that contribute to the development of symptomatic gout include:",
+                        trans: "البلاعم المقيمة بالغشاء الزليلي تبلعم الكريستالات، فقط حوالي 10% من المرضى اللي عدهم فرط حمض يوريك الدم يطورون نقرس. عوامل أخرى تساهم بتطور نقرس مصحوب بأعراض تشمل:"
+                    },
+                    {
+                        text: "• Age of the individual and duration of the hyperuricemia. Gout usually appears after 20 to 30 years of hyperuricemia",
+                        trans: "• عمر الفرد ومدة فرط حمض يوريك الدم. النقرس عادة يظهر بعد 20 لـ 30 سنة من فرط حمض يوريك الدم"
+                    },
+                    {
+                        text: "• Genetic predisposition. • Alcohol consumption • Obesity",
+                        trans: "• الاستعداد الوراثي. • استهلاك الكحول • السمنة"
+                    },
+                    {
+                        text: "• Drugs (e.g., thiazides) that reduce excretion of urate",
+                        trans: "• أدوية (مثلاً، ثيازيدات) اللي تقلل إخراج اليورات"
+                    },
+                    {
+                        text: "MORPHOLOGY",
+                        trans: "المورفولوجيا",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Acute gouty arthritis is characterized by an intense inflammatory infiltrate rich in neutrophils that permeates the synovium and synovial fluid. Urate crystals",
+                        trans: "التهاب المفاصل النقرس الحاد يتميز بـ ارتشاح التهابي كثيف غني بالعدلات اللي يتغلغل بالغشاء الزليلي والسائل الزليلي. كريستالات اليورات"
+                    }
+                ]
+            },
+            // Slide 5: Gout (cont.)
+            {
+                content: [
+                    {
+                        text: "are frequently found in the cytoplasm of the neutrophils in aspirated joint fluid and are arranged in small clusters in the synovium.",
+                        trans: "موجودة بشكل متكرر بسايتوبلازم العدلات بسائل المفصل المسحوب ومرتبة بعناقيد صغيرة بالغشاء الزليلي."
+                    },
+                    {
+                        text: "Tophi in the articular cartilage, ligaments, tendons, and bursae are pathognomonic of gout. They are formed by large aggregates of urate crystals surrounded by an intense foreign body giant cell reaction.",
+                        trans: "التوف (Tophi) بالغضروف المفصلي، الأربطة، الأوتار، والأكياس الزليلية هي علامة مميزة للنقرس. هي تتكون من تجمعات كبيرة من كريستالات اليورات محاطة بتفاعل خلايا عملاقة جسم غريب كثيف."
+                    },
+                    {
+                        text: "Gouty nephropathy refers to renal complications (e.g., uric acid nephrolithias [kidney stones], pyelonephritis) caused by the deposition of urate crystals or tophi in the renal medullary interstitium or tubules.",
+                        trans: "الاعتلال الكلوي النقرسي يشير لمضاعفات كلوية (مثلاً، حصى كلى حامض اليوريك، التهاب الحويضة والكلية) مسببة بواسطة ترسب كريستالات اليورات أو التوف بخلال لب الكلية أو النبيبات."
+                    },
+                    {
+                        text: "Clinical Features. Four clinical stages are recognized:",
+                        trans: "الميزات السريرية. أربع مراحل سريرية مميزة:"
+                    },
+                    {
+                        text: "• Asymptomatic hyperuricemia begins around puberty in men and after menopause in women.",
+                        trans: "• فرط حمض يوريك الدم بدون أعراض يبدي حول البلوغ بالرجال وبعد سن اليأس بالنساء."
+                    },
+                    {
+                        text: "• Acute arthritis presents with sudden onset, excruciating joint pain, localized hyperemia, and warmth. Most first attacks are monoarticular and 50% occur in the metatarsophalangeal joint of the big toe.",
+                        trans: "• التهاب مفاصل حاد يظهر بـ بداية مفاجئة، ألم مفصل مبرح، احتقان موضعي، ودفو. معظم النوبات الأولى تكون أحادية المفصل و 50% تصير بالمفصل المشطي السلامي لإصبع القدم الكبير."
+                    },
+                    {
+                        text: "• Asymptomatic intercritical period is the symptom-free interval following resolution of acute arthritis.",
+                        trans: "• فترة بين النوبات بدون أعراض هي الفترة الخالية من الأعراض بعد زوال التهاب المفاصل الحاد."
+                    },
+                    {
+                        text: "• Chronic tophaceous gout develops on average about 10 years after the initial acute attack.",
+                        trans: "• النقرس التوفي المزمن يتطور بالمعدل حوالي 10 سنوات بعد النوبة الحادة الأولية."
+                    },
+                    {
+                        text: "Treatment of gout aims at lifestyle modification (e.g., weight loss, alcohol reduction, dietary changes to reduce purine intake) and medication to reduce inflammation (e.g., NSAIDs, colchicine) and lower serum urate levels (e.g., xanthine oxidase inhibitors). Uricosuric drugs that increase renal uric acid",
+                        trans: "علاج النقرس يهدف لـ تعديل نمط الحياة (مثلاً، فقدان الوزن، تقليل الكحول، تغييرات غذائية لتقليل أخذ البيورين) وأدوية لتقليل الالتهاب (مثلاً، NSAIDs، كولشيسين) وخفض مستويات يورات المصل (مثلاً، مثبطات أوكسيداز الزانثين). أدوية طاردة لليورات اللي تزيد إخراج حامض اليوريك الكلوي"
+                    }
+                ]
+            },
+            // Slide 6: Pseudogout + Infectious Arthritis Intro
+            {
+                content: [
+                    {
+                        text: "excretion can also be used. Generally, gout does not shorten life span but can significantly affect quality of life.",
+                        trans: "ممكن همين تستخدم. عموماً، النقرس ما يقصر العمر بس ممكن يأثر بشكل كبير على نوعية الحياة."
+                    },
+                    {
+                        text: "Calcium Pyrophosphate Crystal Deposition Disease (Pseudogout)",
+                        trans: "مرض ترسب كريستالات بيروفوسفات الكالسيوم (النقرس الكاذب)",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Calcium pyrophosphate crystal deposition disease (CPPD), also known as pseudogout, usually occurs in individuals older than 50 years and becomes more common with increasing age.",
+                        trans: "مرض ترسب كريستالات بيروفوسفات الكالسيوم (CPPD)، المعروف أيضاً بالنقرس الكاذب، عادة يصير بأفراد أكبر من 50 سنة ويصير أكثر شيوعاً بزيادة العمر."
+                    },
+                    {
+                        text: "CPPD is divided into sporadic (idiopathic), hereditary, and secondary types. An autosomal dominant variant caused by germline mutations in the pyrophosphate transport channel results in crystal deposition and arthritis relatively early in life.",
+                        trans: "CPPD يتقسم لـ فرادي (مجهول السبب)، وراثي، وأنواع ثانوية. نوع وراثي جسمي سائد مسبب بطفرات خط جرثومي بقناة نقل البيروفوسفات ينتج ترسب كريستالات والتهاب مفاصل بوقت مبكر نسبياً بالحياة."
+                    },
+                    {
+                        text: "Various disorders, including previous joint damage, hyperparathyroidism, hemochromatosis, hypothyroidism, and diabetes, predispose to secondary CPPD.",
+                        trans: "اضطرابات متنوعة، تشمل تلف مفصل سابق، فرط نشاط جارات الدرقية، داء ترسب الأصبغة الدموية، قصور الدرقية، والسكري، تهيئ للـ CPPD الثانوي."
+                    },
+                    {
+                        text: "MORPHOLOGY The crystals first develop in the articular cartilage, menisci, and intervertebral discs, and as the deposits enlarge they may rupture and seed the joint.",
+                        trans: "المورفولوجيا: الكريستالات أول شي تتطور بالغضروف المفصلي، الغضاريف الهلالية، والأقراص بين الفقرات، ومن الترسبات تكبر ممكن تنفجر وتبذر المفصل."
+                    },
+                    {
+                        text: "Clinical Features. CPPD is frequently asymptomatic. However, it may produce acute, subacute, or chronic arthritis that can be confused clinically with OA or RA.",
+                        trans: "الميزات السريرية. CPPD بشكل متكرر يكون بدون أعراض. بس، ممكن ينتج التهاب مفاصل حاد، تحت حاد، أو مزمن ممكن ينخلط سريرياً ويا التهاب المفاصل التنكسي أو الروماتويد."
+                    },
+                    {
+                        text: "The joint involvement may last from several days to weeks and may be monoarticular or polyarticular; . Ultimately, approximately 50% of affected individuals experience significant joint damage.",
+                        trans: "إصابة المفصل ممكن تستمر من عدة أيام لأسابيع وممكن تكون أحادية المفصل أو متعددة المفاصل. بالنهاية، تقريباً 50% من الأفراد المصابين يعانون تلف مفصل كبير."
+                    },
+                    {
+                        text: "Therapy is supportive: there is no known treatment that prevents or slows crystal formation.",
+                        trans: "العلاج داعم: ماكو علاج معروف يمنع أو يبطئ تكوين الكريستالات."
+                    },
+                    {
+                        text: "Infectious Arthritis",
+                        trans: "التهاب المفاصل المعدي",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Joints can become infected from hematogenous dissemination, from direct inoculation through the skin, or from contiguous spread from a soft tissue",
+                        trans: "المفاصل ممكن تنعدي من انتشار دموي، من تلقيح مباشر عبر الجلد، أو من انتشار مجاور من خراج نسيج رخو"
+                    }
+                ]
+            },
+            // Slide 7: Infectious Arthritis (cont.)
+            {
+                content: [
+                    {
+                        text: "abscess or osteomyelitis. Infectious arthritis is potentially serious because it can cause rapid, permanent joint destruction.",
+                        trans: "أو التهاب العظم والنقي. التهاب المفاصل المعدي محتمل يكون خطير لأنه يكدر يسبب تدمير مفصل سريع ودائم."
+                    },
+                    {
+                        text: "Suppurative Arthritis",
+                        trans: "التهاب المفاصل القيحي",
+                        isSubTitle: true
+                    },
+                    {
+                        text: "Bacteria that cause acute suppurative arthritis usually enter the joints by hematogenous spread. As with osteomyelitis, the etiologic agent depends on the anatomic location and clinical setting (e.g., trauma, intravenous drug use).",
+                        trans: "البكتيريا اللي تسبب التهاب مفاصل قيحي حاد عادة تدخل المفاصل بانتشار دموي. مثل التهاب العظم والنقي، العامل المسبب يعتمد على الموقع التشريحي والوضع السريري (مثلاً، رضوض، استخدام مخدرات وريدي)."
+                    },
+                    {
+                        text: "Staphylococcus aureus is the most common pathogen in adults and children; in neonates, group B Streptococcus may be responsible.",
+                        trans: "المكورات العنقودية الذهبية هي العامل الممرض الأكثر شيوعاً بالبالغين والأطفال؛ بحديثي الولادة، المجموعة B العقديات ممكن تكون مسؤولة."
+                    },
+                    {
+                        text: "Infection with gram-negative bacilli and Pseudomonas is generally seen in patients who are immunocompromised and in people who use intravenous drugs .",
+                        trans: "العدوى بالعصيات سلبية الغرام والزائفة عموماً تنشاف بالمرضى اللي مناعتهم ضعيفة وبالناس اللي يستخدمون مخدرات وريدية."
+                    },
+                    {
+                        text: "The classic presentation is the sudden development of an acutely painful, warm, and swollen joint with a restricted range of motion.",
+                        trans: "التقديم الكلاسيكي هو التطور المفاجئ لمفصل مؤلم بشكل حاد، حار، ومتورم مع مدى حركة مقيد."
+                    },
+                    {
+                        text: "Fever, leukocytosis, and elevated C-reactive protein are common. The infection usually involves only a single joint, most commonly the knee, hip, shoulder and elbow .",
+                        trans: "حمى، زيادة كريات الدم البيضاء، وارتفاع بروتين C التفاعلي شائعة. العدوى عادة تشمل بس مفصل واحد، أكثر شيوعاً الركبة، الورك، الكتف والمرفق."
+                    },
+                    {
+                        text: "The axial joints are more often involved in individuals who inject drugs. Joint aspiration is diagnostic if it yields purulent fluid in which the causative agent can be identified. Prompt recognition and effective antimicrobial therapy can prevent joint destruction.",
+                        trans: "المفاصل المحورية تنصاب أكثر غالباً بالأفراد اللي يحقنون مخدرات. سحب المفصل تشخيصي إذا طلع سائل قيحي يكدر العامل المسبب يتحدد بيه. التعرف الفوري والعلاج بمضادات الميكروبات الفعال يكدر يمنع تدمير المفصل."
+                    }
+                ]
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function renderPage() {
+            const container = document.getElementById('contentArea');
+            const data = pages[currentIndex];
+            
+            document.getElementById('pageIndicator').innerText = `${currentIndex + 1} / ${pages.length}`;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === pages.length - 1;
+
+            let html = '';
+            
+            data.content.forEach((item, idx) => {
+                if (item.type === 'image') {
+                    html += `
+                        <div class="lecture-image-container">
+                            <img src="${item.src}" alt="Lecture Figure" class="lecture-image">
+                        </div>
+                    `;
+                } else {
+                    let cssClass = "english-paragraph";
+                    if (item.isTitle) cssClass = "title-text";
+                    if (item.isSubTitle) cssClass = "sub-title";
+
+                    const words = item.text.split(' ');
+                    let interactiveText = '';
+                    words.forEach(word => {
+                        const cleanWordForLookup = word.replace(/[.,()?!:;“”"°\[\]]/g, '').toLowerCase();
+                        interactiveText += `<span class="interactive-word" onclick="showWordMeaning('${cleanWordForLookup}', '${word}')">${word}</span> `;
+                    });
+
+                    html += `
+                        <div class="text-block">
+                            <div class="${cssClass}">
+                                ${interactiveText}
+                            </div>
+                            <button class="toggle-trans-btn" onclick="toggleTranslation('trans-${idx}')">
+                                إظهار الترجمة &#11015;
+                            </button>
+                            <div id="trans-${idx}" class="inline-translation">
+                                ${item.trans}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+            window.scrollTo(0,0);
+        }
+
+        function toggleTranslation(id) {
+            const el = document.getElementById(id);
+            if (el.style.display === "block") {
+                el.style.display = "none";
+            } else {
+                el.style.display = "block";
+            }
+        }
+
+        let currentWordForAudio = "";
+
+        function showWordMeaning(cleanWord, originalWord) {
+            const translation = dictionary[cleanWord] || "---"; 
+            
+            currentWordForAudio = originalWord.replace(/[.,()?!:;“”"°\[\]]/g, '');
+
+            const box = document.getElementById('selectedWordBox');
+            const enSpan = document.getElementById('swEnglish');
+            const arSpan = document.getElementById('swArabic');
+
+            enSpan.innerText = currentWordForAudio; 
+            arSpan.innerText = translation;
+
+            const overlay = document.getElementById('sheetOverlay');
+            overlay.classList.add('active');
+        }
+
+        function playAudio() {
+            if (currentWordForAudio) {
+                const utterance = new SpeechSynthesisUtterance(currentWordForAudio);
+                utterance.lang = 'en-US'; 
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function closeSheet(e) {
+            if (e.target.id === 'sheetOverlay') {
+                const overlay = document.getElementById('sheetOverlay');
+                overlay.classList.remove('active');
+            }
+        }
+
+        function changePage(dir) {
+            currentIndex += dir;
+            renderPage();
+        }
+
+        renderPage();
+
+    </script>
+</body>
+</html>
